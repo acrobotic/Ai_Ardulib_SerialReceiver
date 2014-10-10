@@ -3,9 +3,12 @@
 
 SerialReceiver receiver = SerialReceiver();
 Stream *s;
-#define rxPin 3
-#define txPin 4
-SoftwareSerial softSerial(rxPin,txPin);
+
+#ifndef PORTD
+ #define rxPin 3
+ #define txPin 4
+ SoftwareSerial softSerial(rxPin,txPin);
+#endif
 
 void setup() 
 {
