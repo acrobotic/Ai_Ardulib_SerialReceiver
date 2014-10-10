@@ -245,3 +245,15 @@ void SerialReceiver::printMessageInfo() {
     *_serial << endl;
 }
 #endif
+
+void SerialReceiver::printMessage() {
+    for (int i=0; i<itemCnt; i++) {
+        if (i < itemCnt-1) {
+            *_serial << itemBuffer[i] << " ";
+        }
+        else {
+            *_serial << itemBuffer[i];
+        }
+    }
+    *_serial << endl;
+}
