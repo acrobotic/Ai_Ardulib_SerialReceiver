@@ -7,6 +7,7 @@
 #include "WProgram.h"
 #endif
 #include "Streaming.h"
+#include <SoftwareSerial.h>
 
 enum {SR_MAX_ITEM_SZ = 25};
 enum {SR_MAX_ITEMS = 5};
@@ -28,6 +29,7 @@ class SerialReceiver {
 
     public:
         SerialReceiver();
+        void setSerialObj(SoftwareSerial *serial);
         void process(int serialByte);
         bool messageReady();
         void reset();
@@ -44,6 +46,7 @@ class SerialReceiver {
         void printMessage();
         
     private:
+        Stream *_serial;
         uint8_t state;
         uint8_t error;
         char itemBuffer[SR_MAX_ITEMS][SR_MAX_ITEM_SZ+1];

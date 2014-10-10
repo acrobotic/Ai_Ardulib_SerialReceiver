@@ -1,26 +1,43 @@
 #include "SerialReceiver.h"
+#include <SoftwareSerial.h>
 
 SerialReceiver receiver = SerialReceiver();
+Stream *s;
+#define rxPin 3
+#define txPin 4
+SoftwareSerial softSerial(rxPin,txPin);
 
-void setup() {
-    Serial.begin(9600);
+void setup() 
+{
+
+#ifdef PORTD
+ Serial.begin(9600);
+ s = &Serial;
+#else
+ softSerial.begin(9600);
+ receiver.setSerialObj(&softSerial);
+ s = &softSerial;
+#endif
+
 }
 
-void loop() {
+void loop() 
+{
     int myInt;
     float myFloat;
-
-    while (Serial.available() > 0) {
-        receiver.process(Serial.read());
-        if (receiver.messageReady()) {
-            Serial << "Message Ready" << endl;
-            Serial << "-------------" << endl;
+    while (s->available() > 0) 
+    {
+        receiver.process(s->read());
+        if (receiver.messageReady()) 
+        {
+            *s << "Message Ready" << endl;
             myInt = receiver.readInt(0);
+            *s << "myInt = " << _DEC(myInt) << endl;
+#ifdef PORTD
             myFloat = receiver.readFloat(1);
-            Serial << "myInt = " << _DEC(myInt) << endl;
-            Serial << "myFloat = " << myFloat << endl;
-            Serial << "-------------" << endl;
-            Serial << endl;
+            *s << "myFloat = " << myFloat << endl;
+#endif
+            *s << endl;
             receiver.reset();
         }
     }

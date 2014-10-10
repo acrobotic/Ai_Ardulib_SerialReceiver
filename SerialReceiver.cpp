@@ -7,7 +7,16 @@ SerialReceiver::SerialReceiver() {
     stopChar = SR_DFLT_STOP_CHAR;
     sepChar = SR_DFLT_SEP_CHAR;
     resetState();
+#ifdef PORTD 
+    _serial = (HardwareSerial *)&Serial;  
+#endif
 }
+
+void SerialReceiver::setSerialObj(SoftwareSerial *serial)
+{
+    _serial = (SoftwareSerial*)serial; 
+}
+
 
 bool SerialReceiver::messageReady() {
     if (state == SR_STATE_MESSAGE) {
@@ -52,6 +61,7 @@ int SerialReceiver::readInt(uint8_t itemNum) {
     }
 }
 
+#ifdef PORTD
 long SerialReceiver::readLong(uint8_t itemNum) {
     if (checkItemRange(itemNum)) {
         return atol(itemBuffer[itemNum]);
@@ -73,6 +83,7 @@ double SerialReceiver::readDouble(uint8_t itemNum) {
 float SerialReceiver::readFloat(uint8_t itemNum) {
     return (float) readDouble(itemNum);
 }
+#endif
 
 void SerialReceiver::copyString(uint8_t itemNum, char* string, uint8_t size) {
     if (checkItemRange(itemNum)) {
@@ -212,35 +223,37 @@ void SerialReceiver::resetItems() {
     }
 }
 
+#ifdef PORTD
 void SerialReceiver::printInfo() {
-    Serial << "Current Message Info" << endl;
-    Serial << "--------------------" << endl;
-    Serial << "state:   " << _DEC(state) << endl;
-    Serial << "error:   " << _DEC(error) << endl;
-    Serial << "itemCnt: " << _DEC(itemCnt) << endl;
-    Serial << "itemPos: " << _DEC(itemPos) << endl;
+    *_serial << "Current Message Info" << endl;
+    *_serial << "--------------------" << endl;
+    *_serial << "state:   " << _DEC(state) << endl;
+    *_serial << "error:   " << _DEC(error) << endl;
+    *_serial << "itemCnt: " << _DEC(itemCnt) << endl;
+    *_serial << "itemPos: " << _DEC(itemPos) << endl;
     for (int i=0; i<itemCnt; i++) {
-        Serial << "buf[" << _DEC(i) << "] = " << itemBuffer[i] << endl;
+        *_serial << "buf[" << _DEC(i) << "] = " << itemBuffer[i] << endl;
     }
-    Serial << endl;
+    *_serial << endl;
 }
 
 void SerialReceiver::printMessageInfo() {
-    Serial << "Message = " << endl;
+    *_serial << "Message = " << endl;
     for (int i=0; i<itemCnt; i++) {
-        Serial << "buf[" << _DEC(i) << "] = " << itemBuffer[i] << ", len = " << _DEC(itemLenBuffer[i]) << endl;
+        *_serial << "buf[" << _DEC(i) << "] = " << itemBuffer[i] << ", len = " << _DEC(itemLenBuffer[i]) << endl;
     }
-    Serial << endl;
+    *_serial << endl;
 }
+#endif
 
 void SerialReceiver::printMessage() {
     for (int i=0; i<itemCnt; i++) {
         if (i < itemCnt-1) {
-            Serial << itemBuffer[i] << " ";
+            *_serial << itemBuffer[i] << " ";
         }
         else {
-            Serial << itemBuffer[i];
+            *_serial << itemBuffer[i];
         }
     }
-    Serial << endl;
+    *_serial << endl;
 }
