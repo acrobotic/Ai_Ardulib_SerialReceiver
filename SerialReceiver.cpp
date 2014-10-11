@@ -36,6 +36,17 @@ uint8_t SerialReceiver::numberOfItems() {
     }
 }
 
+int SerialReceiver::readInt(uint8_t itemNum) {
+    if (checkItemRange(itemNum)) {
+        return atoi(itemBuffer[itemNum]);
+    }
+    else {
+        return 0;
+    }
+}
+
+#ifdef PORTD
+
 char SerialReceiver::readChar(uint8_t itemNum, uint8_t ind) {
     char rval;
     if (checkItemRange(itemNum)) {
@@ -52,16 +63,6 @@ char SerialReceiver::readChar(uint8_t itemNum, uint8_t ind) {
     return rval;
 }
 
-int SerialReceiver::readInt(uint8_t itemNum) {
-    if (checkItemRange(itemNum)) {
-        return atoi(itemBuffer[itemNum]);
-    }
-    else {
-        return 0;
-    }
-}
-
-#ifdef PORTD
 long SerialReceiver::readLong(uint8_t itemNum) {
     if (checkItemRange(itemNum)) {
         return atol(itemBuffer[itemNum]);
@@ -83,7 +84,6 @@ double SerialReceiver::readDouble(uint8_t itemNum) {
 float SerialReceiver::readFloat(uint8_t itemNum) {
     return (float) readDouble(itemNum);
 }
-#endif
 
 void SerialReceiver::copyString(uint8_t itemNum, char* string, uint8_t size) {
     if (checkItemRange(itemNum)) {
@@ -96,6 +96,7 @@ void SerialReceiver::copyString(uint8_t itemNum, char* string, uint8_t size) {
     }
 }
 
+#endif
 
 bool SerialReceiver::checkItemRange(uint8_t itemNum) {
     if ((state==SR_STATE_MESSAGE) && (itemNum >=0) && (itemNum < itemCnt)) {
